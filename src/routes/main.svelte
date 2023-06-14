@@ -13,21 +13,24 @@
   import Winddir from "./svgs/wind-direction.svg";
   import Circle from "./svgs/circle.svg";
   import { LoadRing } from "svelte-loading-animation";
-
+  import { clickOutside } from "./clickoutside";
+  import fuzzysort from "fuzzysort";
   let weatherData;
   let currentWeatherVideo;
   let weatherTemp;
   let city = "";
   let country = "";
   let wind;
-
+  let inputvalue;
+  let AllCountriesData;
+  let extendedsearch = undefined;
   onMount(async () => {
     try {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
           const { latitude, longitude } = position.coords;
           const response = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,rain,weathercode,windspeed_10m,temperature_80m,is_day&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,windspeed_10m_max&current_weather=true&timezone=auto`
+            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,rain,weathercode,windspeed_10m,temperature_80m,is_day&daily=temperature_2m_max,weathercode,temperature_2m_min,sunrise,sunset,windspeed_10m_max&current_weather=true&timezone=auto`
           );
           const data = await response.json();
 
@@ -37,6 +40,10 @@
             }`
           );
           const geoData = await geoResponse.json();
+          const AllCountries = await fetch(
+            "https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/countries%2Bstates.json"
+          );
+          AllCountriesData = await AllCountries.json();
 
           if (geoData.results.length > 0) {
             const result = geoData.results[0];
@@ -136,26 +143,67 @@
     const index = Math.round(degrees / 45) % 8;
     return directions[index];
   }
+
+  function searchJSON(obj, key, val) {
+    let results = [];
+    for (let k in obj) {
+      if (obj.hasOwnProperty(k)) {
+        if (k === key && obj[k] === val) {
+          results.push(obj);
+        } else if (typeof obj[k] === "object") {
+          results = results.concat(searchJSON(obj[k], key, val));
+        }
+      }
+    }
+    return results;
+  }
 </script>
 
 <div class="wrapper">
   {#if currentWeatherVideo}
     <div class="info-wrapper" transition:fly={{ y: 50, duration: 500 }}>
-      <div class="weather-temp">{weatherTemp}°</div>
-      <div class="weather-desc">{currentWeatherVideo.description}</div>
-      <div class="wind-wrapper">
-        <div class="dir-wrapper">
-          <img
-            src={Winddir}
-            style="transform: rotate({wind.dir}deg);"
-            alt="wind direction"
-          />
-          <div class="compass-dir">{wind.compdir}</div>
+      <div>
+        <div class="weather-temp">{weatherTemp}°</div>
+        <div class="weather-desc">{currentWeatherVideo.description}</div>
+
+        <div class="wind-wrapper">
+          <div class="dir-wrapper">
+            <img
+              src={Winddir}
+              style="transform: rotate({wind.dir}deg);"
+              alt="wind direction"
+            />
+            <div class="compass-dir">{wind.compdir}</div>
+          </div>
+          <img src={Circle} alt="sep" class="seperator" />
+          <div class="weather-wind">{wind.speed}</div>
         </div>
-        <img src={Circle} alt="sep" class="seperator" />
-        <div class="weather-wind">{wind.speed}</div>
       </div>
-      <div class="country-city">{city}, {country}</div>
+      <div class="secondary-wrapper">
+        <div
+          on:click={() => {
+            extendedsearch = true;
+          }}
+          use:clickOutside={() => {
+            extendedsearch = false;
+          }}
+          class:showsearch={extendedsearch === true}
+          class:hidesearch={extendedsearch === false}
+          class="search"
+        >
+          {#if extendedsearch}
+            <input
+              bind:value={inputvalue}
+              type="text"
+              class="search-input"
+              in:fade={{ delay: 800 }}
+              placeholder="Search a city,country..."
+            />
+          {/if}
+        </div>
+        <div class="country-city">{city}, {country}</div>
+      </div>
+      <div style="width: 211.63px;" />
     </div>
     <video
       transition:fade={{ duration: 1000 }}
@@ -184,6 +232,26 @@
     overflow: hidden;
     position: relative;
   }
+  ::-webkit-input-placeholder {
+    color: #fffbf76d;
+  }
+  :-moz-placeholder {
+    color: #fffbf76d;
+    opacity: 1;
+  }
+  ::-moz-placeholder {
+    color: #fffbf76d;
+    opacity: 1;
+  }
+  :-ms-input-placeholder {
+    color: #fffbf76d;
+  }
+  ::-ms-input-placeholder {
+    color: #fffbf76d;
+  }
+  ::placeholder {
+    color: #fffbf76d;
+  }
   #video-player {
     position: absolute;
     top: 0;
@@ -192,6 +260,10 @@
     height: 100%;
     object-fit: cover;
     z-index: -1;
+  }
+  .info-wrapper {
+    display: flex;
+    align-content: center;
   }
   .loading-wrapper {
     position: absolute;
@@ -231,14 +303,75 @@
   }
   .country-city {
     color: rgba(255, 255, 255, 0.281);
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 50px;
     text-align: center;
   }
   .seperator {
     margin: 10px;
     opacity: 0.4;
+  }
+  .search {
+    position: relative;
+    display: flex;
+    transition: all 1s;
+    text-align: center;
+    width: 28px;
+    height: 28px;
+    background-color: rgba(255, 255, 255, 0.342);
+    border-radius: 50%;
+  }
+  .search-input {
+    width: 160px;
+    background-color: transparent;
+    border: none;
+    margin-left: 5px;
+  }
+  input:focus {
+    outline: none;
+  }
+  .showsearch {
+    animation: extend 1s forwards;
+  }
+  .hidesearch {
+    animation: hide 1s forwards;
+  }
+  @keyframes extend {
+    0% {
+      width: 28px;
+      border-radius: 50%;
+    }
+    50% {
+      border-radius: 28px;
+    }
+    100% {
+      width: 200px;
+      border-radius: 28px;
+    }
+  }
+  @keyframes hide {
+    0% {
+      width: 200px;
+      border-radius: 28px;
+    }
+    50% {
+      border-radius: 50%;
+    }
+    100% {
+      width: 28px;
+      border-radius: 50%;
+    }
+  }
+  .search::after {
+    content: url("./svgs/search.svg");
+    position: absolute;
+    right: 0;
+  }
+  .search:hover {
+    cursor: pointer;
+  }
+  .secondary-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 </style>

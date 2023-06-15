@@ -12,62 +12,28 @@
   import clear from "./vids/clear.mp4";
   import Winddir from "./svgs/wind-direction.svg";
   import Circle from "./svgs/circle.svg";
+  import Video from "./video.svelte";
   import { LoadRing } from "svelte-loading-animation";
   import { clickOutside } from "./clickoutside";
 
-  let weatherData;
-  let currentWeatherVideo;
-  let weatherTemp;
+  let weatherData,
+    weatherTemp,
+    currentWeatherVideo,
+    wind,
+    inputvalue,
+    AllCountriesData,
+    currenttime,
+    duration;
   let state = "";
   let country = "";
-  let wind;
-  let inputvalue;
-  let AllCountriesData;
   let extendedsearch = undefined;
-  let AllMatches = [];
   let istyping = false;
   onMount(async () => {
     try {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
           const { latitude, longitude } = position.coords;
-          const response = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,rain,weathercode,windspeed_10m,temperature_80m,is_day&daily=temperature_2m_max,weathercode,temperature_2m_min,sunrise,sunset,windspeed_10m_max&current_weather=true&timezone=auto`
-          );
-          const data = await response.json();
-
-          const geoResponse = await fetch(
-            `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${
-              import.meta.env.VITE_OPENCAGE_API
-            }`
-          );
-          const geoData = await geoResponse.json();
-          const AllCountries = await fetch(
-            "https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/countries%2Bstates.json"
-          );
-          AllCountriesData = await AllCountries.json();
-
-          if (geoData.results.length > 0) {
-            const result = geoData.results[0];
-            state = result.components.state || "";
-            country = result.components.country || "";
-          }
-
-          if (response.ok) {
-            weatherData = data;
-            const weatherCode = weatherData.current_weather.weathercode;
-            weatherTemp = weatherData.current_weather.temperature;
-            wind = {
-              speed: weatherData.current_weather.windspeed,
-              dir: weatherData.current_weather.winddirection,
-              compdir: convertWindDirection(
-                weatherData.current_weather.winddirection
-              ),
-            };
-            currentWeatherVideo = getCurrentWeather(weatherCode);
-          } else {
-            console.error("Request failed with status:", response.status);
-          }
+          fetchLocation(longitude, latitude);
         });
       } else {
         console.error("Geolocation is not supported by this browser.");
@@ -76,7 +42,64 @@
       console.error("Request failed:", error);
     }
   });
+  async function fetchLocation(lon, lat, locationname = "") {
+    let response, geoResponse, data, geoData, result, weatherCode;
+    if (lon && lat) {
+      response = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,rain,weathercode,windspeed_10m,temperature_80m,is_day&daily=temperature_2m_max,weathercode,temperature_2m_min,sunrise,sunset,windspeed_10m_max&current_weather=true&timezone=auto`
+      );
+      data = await response.json();
+      geoResponse = await fetch(
+        `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${
+          import.meta.env.VITE_OPENCAGE_API
+        }`
+      );
+      geoData = await geoResponse.json();
 
+      if (geoData.results.length > 0) {
+        result = geoData.results[0];
+        state = result.components.state || "";
+        country = result.components.country || "";
+      }
+    } else {
+      geoResponse = await fetch(
+        `https://api.opencagedata.com/geocode/v1/json?q=${locationname}&key=${
+          import.meta.env.VITE_OPENCAGE_API
+        }`
+      );
+      geoData = await geoResponse.json();
+      if (geoData.results.length > 0) {
+        result = geoData.results[0];
+        state = result.components.state || "";
+        country = result.components.country || "";
+        response = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${result.geometry.lat}&longitude=${result.geometry.lng}&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,rain,weathercode,windspeed_10m,temperature_80m,is_day&daily=temperature_2m_max,weathercode,temperature_2m_min,sunrise,sunset,windspeed_10m_max&current_weather=true&timezone=auto`
+        );
+        data = await response.json();
+      }
+    }
+    const AllCountries = await fetch(
+      "https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/countries%2Bstates.json"
+    );
+    AllCountriesData = await AllCountries.json();
+
+    if (response.ok) {
+      weatherData = data;
+      weatherCode = weatherData.current_weather.weathercode;
+      weatherTemp = weatherData.current_weather.temperature;
+      wind = {
+        speed: weatherData.current_weather.windspeed,
+        dir: weatherData.current_weather.winddirection,
+        compdir: convertWindDirection(
+          weatherData.current_weather.winddirection
+        ),
+      };
+      currenttime = duration;
+      currentWeatherVideo = getCurrentWeather(weatherCode);
+    } else {
+      console.error("Request failed with status:", response.status);
+    }
+  }
   function getCurrentWeather(weatherCode) {
     let videoSrc;
     let description;
@@ -154,10 +177,12 @@
         if (obj.hasOwnProperty(key)) {
           let match = re.exec(obj[key]);
 
-          if (match !== null && match !== "") {
-            if (!match["input"].includes("[object Object]")) {
-              AllMatches.push({ value: match[0], input: match["input"] });
-            }
+          if (
+            match !== null &&
+            match !== "" &&
+            !match["input"].includes("[object Object]")
+          ) {
+            AllMatches.push({ value: match[0], input: match["input"] });
           } else if (typeof obj[key] === "object") {
             AllMatches = AllMatches.concat(deepValueSearch(obj[key], value));
           }
@@ -170,7 +195,7 @@
 </script>
 
 <div class="wrapper">
-  {#if currentWeatherVideo}
+  {#if weatherData}
     <div class="info-wrapper" transition:fly={{ y: 50, duration: 500 }}>
       <div>
         <div class="weather-temp">
@@ -225,6 +250,7 @@
                   <div
                     on:click={() => {
                       inputvalue = match.input;
+                      fetchLocation(0, 0, inputvalue);
                     }}
                     class="suggestion"
                   >
@@ -239,19 +265,7 @@
       </div>
       <div style="width: 211.63px;" />
     </div>
-    <video
-      transition:fade={{ duration: 1000 }}
-      id="video-player"
-      autoplay
-      loop
-      muted
-      on:contextmenu={(e) => {
-        e.preventDefault();
-      }}
-    >
-      <source src={currentWeatherVideo.videoSrc} type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
+    <Video source={currentWeatherVideo.videoSrc} />
   {:else}
     <div class="loading-wrapper">
       <LoadRing color="#0000009E" size="120px" />
@@ -286,15 +300,7 @@
   ::placeholder {
     color: #fffbf76d;
   }
-  #video-player {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: -1;
-  }
+
   .info-wrapper {
     display: flex;
     align-content: center;

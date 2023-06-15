@@ -10,6 +10,9 @@
     autoplay
     loop
     muted
+    on:contextmenu={(e) => {
+      e.preventDefault();
+    }}
   >
     <source src={source} type="video/mp4" />
   </video>

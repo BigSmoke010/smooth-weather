@@ -1,6 +1,6 @@
 <script>
   import { onMount } from "svelte";
-  import { fade, fly } from "svelte/transition";
+  import { fade, fly, slide } from "svelte/transition";
   import thunder from "./vids/thunder.mp4";
   import cloudy from "./vids/cloudy.mp4";
   import fog from "./vids/fog.mp4";
@@ -17,13 +17,9 @@
   import { clickOutside } from "./clickoutside";
 
   let weatherData,
-    weatherTemp,
     currentWeatherVideo,
-    wind,
-    inputvalue,
-    AllCountriesData,
-    currenttime,
-    duration;
+    inputvalue = "",
+    AllCountriesData;
   let state = "";
   let country = "";
   let extendedsearch = undefined;
@@ -43,7 +39,7 @@
     }
   });
   async function fetchLocation(lon, lat, locationname = "") {
-    let response, geoResponse, data, geoData, result, weatherCode;
+    let response, geoResponse, data, geoData, result;
     if (lon && lat) {
       response = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,rain,weathercode,windspeed_10m,temperature_80m,is_day&daily=temperature_2m_max,weathercode,temperature_2m_min,sunrise,sunset,windspeed_10m_max&current_weather=true&timezone=auto`
@@ -85,17 +81,9 @@
 
     if (response.ok) {
       weatherData = data;
-      weatherCode = weatherData.current_weather.weathercode;
-      weatherTemp = weatherData.current_weather.temperature;
-      wind = {
-        speed: weatherData.current_weather.windspeed,
-        dir: weatherData.current_weather.winddirection,
-        compdir: convertWindDirection(
-          weatherData.current_weather.winddirection
-        ),
-      };
-      currenttime = duration;
-      currentWeatherVideo = getCurrentWeather(weatherCode);
+      currentWeatherVideo = getCurrentWeather(
+        weatherData.current_weather.weathercode
+      );
     } else {
       console.error("Request failed with status:", response.status);
     }
@@ -207,13 +195,18 @@
           <div class="dir-wrapper">
             <img
               src={Winddir}
-              style="transform: rotate({wind.dir}deg);"
+              style="transform: rotate({weatherData.current_weather
+                .winddirection}deg);"
               alt="wind direction"
             />
-            <div class="compass-dir">{wind.compdir}</div>
+            <div class="compass-dir">
+              {convertWindDirection(weatherData.current_weather.winddirection)}
+            </div>
           </div>
           <img src={Circle} alt="sep" class="seperator" />
-          <div class="weather-wind">{wind.speed}</div>
+          <div class="weather-wind">
+            {weatherData.current_weather.windspeed}
+          </div>
         </div>
       </div>
       <div class="secondary-wrapper">
@@ -244,8 +237,8 @@
               out:fade
               placeholder="Search a city,country..."
             />
-            <div transition:fade class="suggestions">
-              {#if deepValueSearch(AllCountriesData, inputvalue)}
+            {#if inputvalue.length > 0}
+              <div transition:slide class="suggestions">
                 {#each deepValueSearch(AllCountriesData, inputvalue).slice(0, 10) as match}
                   <div
                     on:click={() => {
@@ -257,8 +250,8 @@
                     {match.input}
                   </div>
                 {/each}
-              {/if}
-            </div>
+              </div>
+            {/if}
           {/if}
         </div>
         <div class="country-city">{state}, {country}</div>

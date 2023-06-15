@@ -15,7 +15,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"fuzzysort": "^2.0.4",
 		"svelte-loading-animation": "^0.0.1"
 	}
 }

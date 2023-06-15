@@ -14,16 +14,18 @@
   import Circle from "./svgs/circle.svg";
   import { LoadRing } from "svelte-loading-animation";
   import { clickOutside } from "./clickoutside";
-  import fuzzysort from "fuzzysort";
+
   let weatherData;
   let currentWeatherVideo;
   let weatherTemp;
-  let city = "";
+  let state = "";
   let country = "";
   let wind;
   let inputvalue;
   let AllCountriesData;
   let extendedsearch = undefined;
+  let AllMatches = [];
+  let istyping = false;
   onMount(async () => {
     try {
       if (navigator.geolocation) {
@@ -47,7 +49,7 @@
 
           if (geoData.results.length > 0) {
             const result = geoData.results[0];
-            city = result.components.city || "";
+            state = result.components.state || "";
             country = result.components.country || "";
           }
 
@@ -143,19 +145,27 @@
     const index = Math.round(degrees / 45) % 8;
     return directions[index];
   }
+  function deepValueSearch(obj, value) {
+    let AllMatches = [];
+    let re = new RegExp(value, "gi");
 
-  function searchJSON(obj, key, val) {
-    let results = [];
-    for (let k in obj) {
-      if (obj.hasOwnProperty(k)) {
-        if (k === key && obj[k] === val) {
-          results.push(obj);
-        } else if (typeof obj[k] === "object") {
-          results = results.concat(searchJSON(obj[k], key, val));
+    if (value !== "") {
+      for (let key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          let match = re.exec(obj[key]);
+
+          if (match !== null && match !== "") {
+            if (!match["input"].includes("[object Object]")) {
+              AllMatches.push({ value: match[0], input: match["input"] });
+            }
+          } else if (typeof obj[key] === "object") {
+            AllMatches = AllMatches.concat(deepValueSearch(obj[key], value));
+          }
         }
       }
     }
-    return results;
+
+    return AllMatches;
   }
 </script>
 
@@ -163,7 +173,9 @@
   {#if currentWeatherVideo}
     <div class="info-wrapper" transition:fly={{ y: 50, duration: 500 }}>
       <div>
-        <div class="weather-temp">{weatherTemp}°</div>
+        <div class="weather-temp">
+          {weatherData.current_weather.temperature}°
+        </div>
         <div class="weather-desc">{currentWeatherVideo.description}</div>
 
         <div class="wind-wrapper">
@@ -186,22 +198,44 @@
           }}
           use:clickOutside={() => {
             extendedsearch = false;
+            istyping = false;
+            inputvalue = "";
           }}
           class:showsearch={extendedsearch === true}
           class:hidesearch={extendedsearch === false}
           class="search"
+          class:typing={istyping === true}
         >
           {#if extendedsearch}
             <input
               bind:value={inputvalue}
               type="text"
+              on:input={() => {
+                deepValueSearch(AllCountriesData, inputvalue);
+                istyping = true;
+              }}
               class="search-input"
               in:fade={{ delay: 800 }}
+              out:fade
               placeholder="Search a city,country..."
             />
+            <div transition:fade class="suggestions">
+              {#if deepValueSearch(AllCountriesData, inputvalue)}
+                {#each deepValueSearch(AllCountriesData, inputvalue).slice(0, 10) as match}
+                  <div
+                    on:click={() => {
+                      inputvalue = match.input;
+                    }}
+                    class="suggestion"
+                  >
+                    {match.input}
+                  </div>
+                {/each}
+              {/if}
+            </div>
           {/if}
         </div>
-        <div class="country-city">{city}, {country}</div>
+        <div class="country-city">{state}, {country}</div>
       </div>
       <div style="width: 211.63px;" />
     </div>
@@ -220,7 +254,7 @@
     </video>
   {:else}
     <div class="loading-wrapper">
-      <LoadRing color="#0000009E" />
+      <LoadRing color="#0000009E" size="120px" />
     </div>
   {/if}
 </div>
@@ -302,8 +336,10 @@
     font-size: 30px;
   }
   .country-city {
+    position: absolute;
     color: rgba(255, 255, 255, 0.281);
-    text-align: center;
+    right: 0;
+    top: 0;
   }
   .seperator {
     margin: 10px;
@@ -319,12 +355,31 @@
     background-color: rgba(255, 255, 255, 0.342);
     border-radius: 50%;
   }
+
   .search-input {
     width: 160px;
     background-color: transparent;
     border: none;
     margin-left: 5px;
   }
+  .suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background-color: rgba(211, 211, 211, 0.507);
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .suggestion:hover {
+    background-color: white;
+  }
+
   input:focus {
     outline: none;
   }
@@ -360,6 +415,19 @@
       border-radius: 50%;
     }
   }
+  @keyframes unround {
+    0% {
+      width: 200px;
+      border-radius: 28px;
+    }
+    100% {
+      width: 200px;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      border-bottom-left-radius: 0px;
+      border-bottom-right-radius: 0px;
+    }
+  }
   .search::after {
     content: url("./svgs/search.svg");
     position: absolute;
@@ -373,5 +441,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+  .typing {
+    animation: unround 1s forwards;
   }
 </style>

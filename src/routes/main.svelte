@@ -10,9 +10,11 @@
   let country = "";
 
   onMount(async () => {
-    const location = await fetch("http://ip-api.com/json/");
+    const location = await fetch(
+      `https://api.ipdata.co/?api-key=${import.meta.env.VITE_IPDATA_API}`
+    );
     const locationdata = await location.json();
-    fetchLocation(locationdata.lon, locationdata.lat);
+    fetchLocation(locationdata.longitude, locationdata.latitude);
   });
   async function fetchLocation(lon, lat, locationname = "") {
     let response, geoResponse, data, geoData, result;

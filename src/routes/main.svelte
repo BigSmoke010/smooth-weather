@@ -11,7 +11,7 @@
 
   onMount(async () => {
     const location = await fetch(
-      `https://api.ipdata.co/?api-key=${process.env.VITE_IPDATA_API}`
+      `https://api.ipdata.co/?api-key=${import.meta.env.VITE_IPDATA_API}`
     );
     const locationdata = await location.json();
     fetchLocation(locationdata.longitude, locationdata.latitude);

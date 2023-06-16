@@ -25,18 +25,9 @@
   let extendedsearch = undefined;
   let istyping = false;
   onMount(async () => {
-    try {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async (position) => {
-          const { latitude, longitude } = position.coords;
-          fetchLocation(longitude, latitude);
-        });
-      } else {
-        console.error("Geolocation is not supported by this browser.");
-      }
-    } catch (error) {
-      console.error("Request failed:", error);
-    }
+    const location = await fetch("http://ip-api.com/json/");
+    const locationdata = await location.json();
+    fetchLocation(locationdata.lon, locationdata.lat);
   });
   async function fetchLocation(lon, lat, locationname = "") {
     let response, geoResponse, data, geoData, result;
@@ -297,6 +288,7 @@
   .info-wrapper {
     display: flex;
     align-content: center;
+    background-color: transparent;
   }
   .loading-wrapper {
     position: absolute;

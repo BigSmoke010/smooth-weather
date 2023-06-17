@@ -8,10 +8,11 @@
   let extendedsearch = undefined;
   let istyping = false;
   let dispatch = createEventDispatcher();
+  let suggestionIndex = 0;
+
   function deepValueSearch(obj, value) {
     let AllMatches = [];
     let re = new RegExp(value, "gi");
-
     if (value !== "") {
       for (let key in obj) {
         if (obj.hasOwnProperty(key)) {
@@ -32,9 +33,57 @@
     }
     return AllMatches;
   }
+
+  function handleKeyDown(event) {
+    if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+      event.preventDefault();
+      navigateSuggestions(event.key);
+      // Scroll to the selected suggestion if it's not fully visible
+      setTimeout(() => {
+        const suggestionElement = document.querySelector(".selected");
+        if (suggestionElement) {
+          suggestionElement.scrollIntoView({
+            block: "nearest",
+            inline: "nearest",
+          });
+        }
+      }, 100);
+    }
+    if (event.key === "Enter") {
+      selectSuggestion();
+    }
+  }
+
+  function navigateSuggestions(key) {
+    const suggestions = deepValueSearch(AllCountriesData, inputvalue).slice(
+      0,
+      10
+    );
+    const numSuggestions = suggestions.length;
+    if (numSuggestions === 0) return;
+
+    if (key === "ArrowUp") {
+      suggestionIndex = (suggestionIndex - 1 + numSuggestions) % numSuggestions;
+    } else if (key === "ArrowDown") {
+      suggestionIndex = (suggestionIndex + 1) % numSuggestions;
+    }
+  }
+
+  function selectSuggestion() {
+    const suggestions = deepValueSearch(AllCountriesData, inputvalue).slice(
+      0,
+      10
+    );
+
+    if (suggestions.length > 0) {
+      inputvalue = suggestions[suggestionIndex].input;
+      dispatch("fetch", { message: inputvalue });
+    }
+  }
 </script>
 
 <div class="secondary-wrapper">
+  <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
   <div
     on:click={() => {
       extendedsearch = true;
@@ -48,6 +97,8 @@
     class:hidesearch={extendedsearch === false}
     class="search"
     class:typing={istyping === true}
+    tabindex="0"
+    on:keydown={handleKeyDown}
   >
     {#if extendedsearch}
       <input
@@ -60,17 +111,22 @@
         class="search-input"
         in:fade={{ delay: 800 }}
         out:fade
-        placeholder="Search a city,country..."
+        placeholder="Search a city, country..."
       />
       {#if inputvalue.length > 0}
         <div transition:slide class="suggestions">
-          {#each deepValueSearch(AllCountriesData, inputvalue).slice(0, 10) as match}
+          {#each deepValueSearch(AllCountriesData, inputvalue) as match, i}
+            <!-- svelte-ignore a11y-mouse-events-have-key-events -->
             <div
               on:click={() => {
                 inputvalue = match.input;
                 dispatch("fetch", { message: inputvalue });
               }}
-              class="suggestion"
+              class:suggestion={i === suggestionIndex}
+              class:selected={i === suggestionIndex}
+              on:mouseover={() => {
+                suggestionIndex = i;
+              }}
             >
               {match.input}
             </div>
@@ -112,6 +168,7 @@
     height: 28px;
     background-color: rgba(255, 255, 255, 0.342);
     border-radius: 50%;
+    margin: 10px;
   }
 
   .search-input {
@@ -125,7 +182,8 @@
     top: 100%;
     left: 0;
     width: 100%;
-    height: 100px;
+    max-height: 200px;
+    overflow-y: auto;
     background-color: rgba(211, 211, 211, 0.507);
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
@@ -134,7 +192,12 @@
     flex-direction: column;
     gap: 5px;
   }
-  .suggestion:hover {
+  .suggestions::-webkit-scrollbar {
+    width: 0;
+    background-color: transparent;
+  }
+  .suggestion:hover,
+  .selected {
     background-color: white;
   }
   input:focus {

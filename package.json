@@ -15,6 +15,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"chart.js": "^4.3.0",
 		"svelte-loading-animation": "^0.0.1"
 	}
 }

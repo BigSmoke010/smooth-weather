@@ -1,11 +1,12 @@
 <script>
   import { onMount } from "svelte";
+  import Down from "./arrow.svelte";
   import Search from "./search.svelte";
   import Video from "./video.svelte";
   import { LoadRing } from "svelte-loading-animation";
   import WeatherInfo from "./weatherinfo.svelte";
-
-  let weatherData, AllCountriesData, weatherDesc;
+  import Details from "./weatherdetails.svelte";
+  let weatherData, AllCountriesData, weatherDesc, geoData;
   let state = "";
   let country = "";
 
@@ -16,11 +17,12 @@
     const locationdata = await location.json();
     fetchLocation(locationdata.longitude, locationdata.latitude);
   });
+
   async function fetchLocation(lon, lat, locationname = "") {
-    let response, geoResponse, data, geoData, result;
+    let response, geoResponse, data, result;
     if (lon && lat) {
       response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,rain,weathercode,windspeed_10m,temperature_80m,is_day&daily=temperature_2m_max,weathercode,temperature_2m_min,sunrise,sunset,windspeed_10m_max&current_weather=true&timezone=auto`
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,rain,weathercode,windspeed_10m,is_day&daily=temperature_2m_max,weathercode,temperature_2m_min,sunrise,sunset,windspeed_10m_max&current_weather=true&timezone=auto`
       );
       data = await response.json();
       geoResponse = await fetch(
@@ -67,23 +69,37 @@
 
 <div class="wrapper">
   {#if weatherData}
-    <WeatherInfo
-      weatherData={{
-        weatherD: weatherData,
-        descript: weatherDesc,
-      }}
-    />
-    <Search
-      {AllCountriesData}
-      on:fetch={(e) => {
-        fetchLocation(0, 0, e.detail.message);
-      }}
-    />
-    <div style="width: 211.63px;">
-      <div class="country-city">{state}, {country}</div>
+    <div class="container">
+      <WeatherInfo
+        weatherData={{
+          weatherD: weatherData,
+          descript: weatherDesc,
+        }}
+      />
+      <Search
+        {AllCountriesData}
+        on:fetch={(e) => {
+          fetchLocation(0, 0, e.detail.message);
+        }}
+      />
+      <div style="width: 211.63px;">
+        <div class="country-city">
+          {state}
+          {country}
+          {geoData.results[0].annotations.flag}
+        </div>
+      </div>
+
+      {#key weatherData.current_weather.weathercode}
+        <Video
+          bind:weatherDesc
+          code={weatherData.current_weather.weathercode}
+        />
+      {/key}
     </div>
-    {#key weatherData.current_weather.weathercode}
-      <Video bind:weatherDesc code={weatherData.current_weather.weathercode} />
+    <Down />
+    {#key weatherData}
+      <Details {weatherData} />
     {/key}
   {:else}
     <div class="loading-wrapper">
@@ -93,14 +109,15 @@
 </div>
 
 <style>
-  :global(:body) {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    position: relative;
-  }
   .wrapper {
     display: flex;
+    flex-direction: column;
+  }
+  .container {
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: 100vh;
   }
   .loading-wrapper {
     position: absolute;
@@ -112,7 +129,7 @@
     position: absolute;
     margin: 10px;
     color: white;
-    color: rgba(255, 255, 255, 0.281);
+    color: rgba(255, 255, 255, 0.581);
     right: 0;
     top: 0;
   }

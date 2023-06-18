@@ -12,6 +12,7 @@
   * {
     font-family: "IBM Plex Sans";
   }
+
   :global(body) {
     margin: 0;
     padding: 0;

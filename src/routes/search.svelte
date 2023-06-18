@@ -63,7 +63,6 @@
     } else if (key === "ArrowDown") {
       suggestionIndex = (suggestionIndex + 1) % numSuggestions;
     }
-    console.log(suggestionIndex);
   }
 
   function selectSuggestion() {

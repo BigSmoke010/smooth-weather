@@ -11,7 +11,8 @@
     weatherDesc,
     weatherIcon,
     geoData,
-    finalAr = [];
+    finalAr = [],
+    colors = {};
   let state = "";
   let country = "";
 
@@ -113,13 +114,14 @@
           bind:weatherDesc
           bind:weatherIcon
           bind:finalAr
+          bind:colors
           code={weatherData.current_weather.weathercode}
         />
       {/key}
     </div>
     <Down />
     {#key weatherData}
-      <Details {weatherData} {finalAr} />
+      <Details {weatherData} {finalAr} {colors} />
     {/key}
   {:else}
     <div class="loading-wrapper">

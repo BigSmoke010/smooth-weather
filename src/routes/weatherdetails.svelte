@@ -1,15 +1,31 @@
 <script>
-  import chartjs from "chart.js/auto";
+  import Chart from "./chart.svelte";
   import { onMount } from "svelte";
-
   export let weatherData;
   export let finalAr;
-
+  export let colors;
   let chartValues = weatherData.hourly.temperature_2m;
   let chartLabels = weatherData.hourly.time;
+
   let followingTemps = [];
   let followingHours = [];
+  let hideBoxShadow = false;
 
+  onMount(() => {
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  });
+
+  function handleScroll() {
+    if (window.scrollY >= 100) {
+      hideBoxShadow = true;
+    } else {
+      hideBoxShadow = false;
+    }
+  }
   const currentTimedef = new Date();
   const currentTime = currentTimedef.getTime();
   const twelveHoursAgo = currentTimedef.getTime() - 12 * 60 * 60 * 1000;
@@ -27,109 +43,106 @@
   followingHours = followingHours.map((x) => {
     return x.substring(x.indexOf("T") + 1);
   });
-
-  let ctx;
-  let chartCanvas;
-  onMount(async (promise) => {
-    ctx = chartCanvas.getContext("2d");
-    var gradientStroke = ctx.createLinearGradient(0, 0, 0, 500);
-    gradientStroke.addColorStop(0, "rgb(255, 0, 0)");
-    gradientStroke.addColorStop(1, "rgb(0, 0, 255)");
-    var myChart = new chartjs(ctx, {
-      type: "line",
-      data: {
-        labels: followingHours,
-        datasets: [
-          {
-            label: "",
-            borderColor: gradientStroke,
-            pointBorderColor: gradientStroke,
-            pointBackgroundColor: gradientStroke,
-            pointHoverBackgroundColor: gradientStroke,
-            pointHoverBorderColor: gradientStroke,
-            pointBorderWidth: 2,
-            pointHoverRadius: 10,
-            pointHoverBorderWidth: 1,
-            pointRadius: 1,
-            fill: false,
-            borderWidth: 4,
-            borderCapStyle: "round",
-            data: followingTemps,
-          },
-        ],
-      },
-      options: {
-        plugins: {
-          legend: {
-            display: false, // Hide the legend
-          },
-        },
-        scales: {
-          y: {
-            min: 0,
-            grid: {
-              color: "white",
-            },
-          },
-          x: {
-            grid: {
-              color: "white",
-            },
-          },
-        },
-      },
-    });
-  });
 </script>
 
-<div class="container">
-  <div class="graph-container">
-    <h1 class="title">Temperature next 12 hours</h1>
-    <canvas bind:this={chartCanvas} id="myChart" />
-  </div>
-  <div class="days-container">
-    {#each finalAr as dayitem}
-      <div class="day">
-        <img src={dayitem.icon} alt="day img" class="day-img" />
-        <div class="temp-container">{dayitem.minTemp}/{dayitem.maxTemp}</div>
-        <div class="weekday">{dayitem.day}</div>
-      </div>
-    {/each}
+<div
+  class="container"
+  style="background-image: linear-gradient(-45deg, {colors.one}, {colors.two});"
+>
+  <div
+    class="container-shadow"
+    style={`
+  box-shadow: ${hideBoxShadow ? "none" : "0px 4px 40px 40px rgb(31, 29, 29)"};
+  `}
+  />
+  <div class="chart-container">
+    <Chart {weatherData} />
+    <div class="days-container">
+      {#each finalAr as dayitem}
+        <div
+          class="day box"
+          style="background:radial-gradient(#5D6666FF var(--p),#2A2E2EFF)"
+        >
+          <img src={dayitem.icon} alt="day img" class="day-img" />
+          <div class="temp-container">
+            {dayitem.minTemp}C°/{dayitem.maxTemp}C°
+          </div>
+          <div class="weekday">{dayitem.day}</div>
+        </div>
+      {/each}
+    </div>
   </div>
 </div>
 
 <style>
+  @property --p {
+    syntax: "<percentage>";
+    inherits: false;
+    initial-value: 10%;
+  }
+  .box {
+    --p: 10%;
+    cursor: pointer;
+    width: 250px;
+    height: 200px;
+    margin: 15px;
+    display: inline-block;
+    transition: --p 0.5s, --l 0.5s, --a 0.5s, transform 0.5s;
+    background: linear-gradient(red var(--p), blue);
+  }
+  .chart-container {
+    background-color: rgb(90, 87, 87);
+    border-radius: 30px;
+    margin: 10px;
+    flex-grow: 1;
+  }
+  .box:hover {
+    --p: 80%;
+    transform: scale(125%);
+    z-index: 1;
+  }
   .container {
     position: relative;
     display: flex;
+    background-size: 400% 400%;
     flex-direction: column;
     transition: all 3s;
-    background-color: rgb(31, 29, 29);
+    background-color: rgba(31, 23, 23, 0.644);
     display: flex;
     flex-direction: row;
+    gap: 10px;
+    animation: gradient 15s ease infinite;
   }
-  .container:before {
-    transition: all 3s;
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .container-shadow {
+    transition: all 0.25s;
     content: "";
     position: absolute;
     background-color: rgb(31, 29, 29);
-    height: 10px;
+    height: 1px;
     width: 100%;
-    top: -10px;
-    box-shadow: 0px 4px 40px 40px rgb(31, 29, 29);
-  }
-  .graph-container {
-    z-index: 1;
-    width: auto;
-    border-radius: 25px;
-    background-image: linear-gradient(72deg, rgb(63, 63, 63), black);
-    margin: 5px;
+    top: 0;
   }
   .days-container {
     display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    height: 700px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+    overflow-x: auto;
+    background-color: rgba(46, 46, 46, 0.507);
+    border-radius: 30px;
     gap: 10px;
   }
   .days-container::-webkit-scrollbar {
@@ -138,23 +151,23 @@
   }
   .day {
     padding: 50px;
-    background-color: rgb(63, 63, 63);
     border-radius: 20px;
-    width: 100px;
-    height: 67px;
+    width: 50px;
+    height: 100px;
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
   }
+  .day-img {
+    position: absolute;
+    top: 0;
+    width: 50px;
+    height: 50px;
+  }
   .weekday {
     position: absolute;
     bottom: 0;
     font-size: 28px;
-  }
-  .title {
-    color: white;
-    margin-top: 50px;
-    text-align: center;
   }
 </style>

@@ -20,7 +20,7 @@
   }
 </script>
 
-<div class="info-wrapper" transition:fly={{ y: 150 }}>
+<div class="info-wrapper" in:fly={{ y: 150 }}>
   <div>
     <div class="weather-temp">
       {weatherData.weatherD.current_weather.temperature}°

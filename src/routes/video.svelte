@@ -11,29 +11,54 @@
   import clear from "./vids/clear.mp4";
   export let code;
   export let weatherDesc;
+  export let weatherData;
+  export let weatherIcon;
   let source;
+  const weekdays = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  let DaysForecastTime = weatherData.daily.time;
+  export let finalAr = [];
+
   function getCurrentWeather(weatherCode) {
-    let videoSrc;
+    let dayIcon;
+    let nightIcon;
     let description;
+    let videoSrc;
+
     switch (weatherCode) {
       case 0:
+        dayIcon = "01d.png";
+        nightIcon = "01n.png";
         videoSrc = clear;
         description = "Clear sky";
         break;
       case 1:
       case 2:
       case 3:
+        dayIcon = "02d.png";
+        nightIcon = "02n.png";
         videoSrc = cloudy;
         description = "Partly cloudy";
         break;
       case 45:
       case 48:
+        dayIcon = "50d.png";
+        nightIcon = "50n.png";
         videoSrc = fog;
         description = "Fog";
         break;
       case 51:
       case 53:
       case 55:
+        dayIcon = "09d.png";
+        nightIcon = "09n.png";
         videoSrc = drizzle;
         description = "Drizzle";
         break;
@@ -41,6 +66,8 @@
       case 63:
       case 65:
       case 77:
+        dayIcon = "10d.png";
+        nightIcon = "10n.png";
         videoSrc = rain;
         description = "Rain";
         break;
@@ -50,32 +77,52 @@
       case 80:
       case 81:
       case 82:
-        videoSrc = snowy;
-        description = "Snow/Rain showers";
-        break;
       case 85:
       case 86:
+        dayIcon = "13d.png";
+        nightIcon = "13n.png";
         videoSrc = snowy;
         description = "Snow/Rain showers";
         break;
       case 95:
+        dayIcon = "11d.png";
+        nightIcon = "11n.png";
         videoSrc = lightStorm;
         description = "Thunderstorm (slight)";
         break;
       case 96:
       case 99:
+        dayIcon = "11d.png";
+        nightIcon = "11n.png";
         videoSrc = thunder;
         description = "Thunderstorm (heavy)";
         break;
       default:
+        dayIcon = "night.png";
+        nightIcon = "night.png";
         videoSrc = night;
         description = "Unknown weather";
         break;
     }
-    return { description, videoSrc };
+
+    return { description, dayIcon, nightIcon, videoSrc };
   }
   weatherDesc = getCurrentWeather(code).description;
+  weatherIcon = {
+    day: getCurrentWeather(code).dayIcon,
+    night: getCurrentWeather(code).nightIcon,
+  };
   source = getCurrentWeather(code).videoSrc;
+  for (let i = 0; i < DaysForecastTime.length; i++) {
+    let curIt = DaysForecastTime[i];
+    let DateEl = new Date(curIt);
+    finalAr.push({
+      icon: "http://openweathermap.org/img/wn/" + weatherIcon.day,
+      minTemp: weatherData.daily.temperature_2m_min[i],
+      maxTemp: weatherData.daily.temperature_2m_max[i],
+      day: weekdays[DateEl.getDay()],
+    });
+  }
 </script>
 
 <video

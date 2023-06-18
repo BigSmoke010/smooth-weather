@@ -6,16 +6,30 @@
   import { LoadRing } from "svelte-loading-animation";
   import WeatherInfo from "./weatherinfo.svelte";
   import Details from "./weatherdetails.svelte";
-  let weatherData, AllCountriesData, weatherDesc, geoData;
+  let weatherData,
+    AllCountriesData,
+    weatherDesc,
+    weatherIcon,
+    geoData,
+    finalAr = [];
   let state = "";
   let country = "";
 
   onMount(async () => {
-    const location = await fetch(
-      `https://api.ipdata.co/?api-key=${import.meta.env.VITE_IPDATA_API}`
-    );
-    const locationdata = await location.json();
-    fetchLocation(locationdata.longitude, locationdata.latitude);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        fetchLocation(position.coords.longitude, position.coords.latitude);
+      });
+      navigator.permissions.query({ name: "geolocation" }).then(async (x) => {
+        if (x.state === "denied") {
+          const location = await fetch(
+            `https://api.ipdata.co/?api-key=${import.meta.env.VITE_IPDATA_API}`
+          );
+          const locationdata = await location.json();
+          fetchLocation(locationdata.longitude, locationdata.latitude);
+        }
+      });
+    }
   });
 
   async function fetchLocation(lon, lat, locationname = "") {
@@ -70,12 +84,15 @@
 <div class="wrapper">
   {#if weatherData}
     <div class="container">
-      <WeatherInfo
-        weatherData={{
-          weatherD: weatherData,
-          descript: weatherDesc,
-        }}
-      />
+      {#key weatherIcon}
+        <WeatherInfo
+          weatherData={{
+            weatherD: weatherData,
+            descript: weatherDesc,
+            icon: weatherIcon,
+          }}
+        />
+      {/key}
       <Search
         {AllCountriesData}
         on:fetch={(e) => {
@@ -92,14 +109,17 @@
 
       {#key weatherData.current_weather.weathercode}
         <Video
+          {weatherData}
           bind:weatherDesc
+          bind:weatherIcon
+          bind:finalAr
           code={weatherData.current_weather.weathercode}
         />
       {/key}
     </div>
     <Down />
     {#key weatherData}
-      <Details {weatherData} />
+      <Details {weatherData} {finalAr} />
     {/key}
   {:else}
     <div class="loading-wrapper">

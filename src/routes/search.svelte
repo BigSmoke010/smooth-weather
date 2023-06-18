@@ -38,7 +38,6 @@
     if (event.key === "ArrowUp" || event.key === "ArrowDown") {
       event.preventDefault();
       navigateSuggestions(event.key);
-      // Scroll to the selected suggestion if it's not fully visible
       setTimeout(() => {
         const suggestionElement = document.querySelector(".selected");
         if (suggestionElement) {
@@ -55,10 +54,7 @@
   }
 
   function navigateSuggestions(key) {
-    const suggestions = deepValueSearch(AllCountriesData, inputvalue).slice(
-      0,
-      10
-    );
+    const suggestions = deepValueSearch(AllCountriesData, inputvalue);
     const numSuggestions = suggestions.length;
     if (numSuggestions === 0) return;
 
@@ -67,6 +63,7 @@
     } else if (key === "ArrowDown") {
       suggestionIndex = (suggestionIndex + 1) % numSuggestions;
     }
+    console.log(suggestionIndex);
   }
 
   function selectSuggestion() {
@@ -76,7 +73,6 @@
     );
 
     if (suggestions.length > 0) {
-      inputvalue = suggestions[suggestionIndex].input;
       dispatch("fetch", { message: inputvalue });
     }
   }

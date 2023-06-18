@@ -3,7 +3,15 @@
   import Winddir from "./svgs/wind-direction.svg";
   import Circle from "./svgs/circle.svg";
   export let weatherData;
-
+  let chosenIcon, iconurl;
+  if (weatherData.icon) {
+    if (weatherData.weatherD.current_weather.is_day) {
+      chosenIcon = weatherData.icon.day;
+    } else {
+      chosenIcon = weatherData.icon.night;
+    }
+    iconurl = "http://openweathermap.org/img/wn/" + chosenIcon;
+  }
   function convertWindDirection(windDirection) {
     const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
     const degrees = windDirection % 360;
@@ -12,14 +20,15 @@
   }
 </script>
 
-<div class="info-wrapper" transition:fly={{ y: 50, duration: 500 }}>
+<div class="info-wrapper" transition:fly={{ y: 150 }}>
   <div>
     <div class="weather-temp">
       {weatherData.weatherD.current_weather.temperature}°
     </div>
     <div class="weather-desc">{weatherData.descript}</div>
-
     <div class="wind-wrapper">
+      <img src={iconurl} alt="weather Icon" />
+      <img src={Circle} alt="sep" class="seperator" />
       <div class="dir-wrapper">
         <img
           src={Winddir}
@@ -61,6 +70,7 @@
   .wind-wrapper {
     display: flex;
     margin: 5px;
+    gap: 3px;
   }
   .dir-wrapper {
     display: flex;

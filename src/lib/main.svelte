@@ -73,12 +73,30 @@
       "https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/countries%2Bstates.json"
     );
     AllCountriesData = await AllCountries.json();
-
+    AllCountriesData = getAllNameValues(AllCountriesData);
     if (response.ok) {
       weatherData = data;
     } else {
       console.error("Request failed with status:", response.status);
     }
+  }
+  function getAllNameValues(obj) {
+    const nameValues = [];
+
+    function extractNameValues(obj) {
+      for (let key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          if (key === "name") {
+            nameValues.push(obj[key]);
+          } else if (typeof obj[key] === "object") {
+            extractNameValues(obj[key]);
+          }
+        }
+      }
+    }
+
+    extractNameValues(obj);
+    return nameValues;
   }
 </script>
 

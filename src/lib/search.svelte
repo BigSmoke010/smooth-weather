@@ -10,8 +10,8 @@
   let dispatch = createEventDispatcher();
   let suggestionIndex = 0;
 
-  function deepValueSearch(obj, value, re = new RegExp(value, "gi")) {
-    if (obj === undefined || obj === null) {
+  function deepValueSearch(arr, value, re = new RegExp(value, "gi")) {
+    if (!Array.isArray(arr)) {
       return [];
     }
 
@@ -19,18 +19,14 @@
       return [];
     }
 
-    let allMatches = [];
+    const allMatches = [];
 
-    for (let [key, val] of Object.entries(obj)) {
-      if (key === "name") {
-        if (typeof val === "string") {
-          let match = re.exec(val);
-          if (match && !match.input.includes("[object Object]")) {
-            allMatches.push({ value: match[0], input: match.input });
-          }
+    for (let val of arr) {
+      if (typeof val === "string") {
+        let match = re.exec(val);
+        if (match && !match.input.includes("[object Object]")) {
+          allMatches.push({ value: match[0], input: match.input });
         }
-      } else if (Array.isArray(val) || typeof val === "object") {
-        allMatches = allMatches.concat(deepValueSearch(val, value, re));
       }
     }
 

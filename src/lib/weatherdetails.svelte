@@ -45,7 +45,7 @@
 
     <div class="days-container" in:fly={{ duration: 550, y: 100 }}>
       {#each finalAr as dayitem}
-        <div class="day box" style="background-color: {colors.one}25;">
+        <div class="day" style="background-color: {colors.one}25;">
           <img src={dayitem.icon} alt="day img" class="day-img" />
           <div class="temp-container">
             {dayitem.minTemp}C°/{dayitem.maxTemp}C°
@@ -74,7 +74,7 @@
     background-color: rgba(31, 23, 23, 0.644);
     display: flex;
     flex-direction: row;
-    gap: 10px;
+    gap: 5px;
     animation: gradient 15s ease infinite;
   }
   .chart-container {
@@ -85,23 +85,9 @@
       0px 9.3px 5.3px rgba(0, 0, 0, 0.028), 0px 13.6px 10px rgba(0, 0, 0, 0.035),
       0px 19px 17.9px rgba(0, 0, 0, 0.042),
       0px 27.6px 33.4px rgba(0, 0, 0, 0.05), 0px 51px 80px rgba(0, 0, 0, 0.07);
-    margin: 10px;
     width: 450px;
-    height: 280px;
-  }
-  .box {
-    --p: 10%;
-    width: 250px;
-    height: 200px;
-    margin: 15px;
-    transition: transform 0.5s, margin 0.4s;
-  }
-  .box:hover {
-    --p: 80%;
-    transform: scale(125%);
-    margin-left: 40px;
-    margin-right: 40px;
-    z-index: 1;
+    height: 100%;
+    margin: 10px;
   }
   @keyframes gradient {
     0% {
@@ -125,47 +111,58 @@
   }
   .days-container {
     display: flex;
-    flex-direction: column;
-    width: 300px;
-    height: 420px;
-    overflow-y: scroll;
-    overflow-x: hidden;
+    flex-direction: row;
+    width: 500px;
+    flex-grow: 1;
+    height: 100%;
+    overflow-y: hidden;
+    overflow-x: scroll;
     background-color: rgba(255, 255, 255, 0.171);
     border-radius: 30px;
     margin: 10px;
-    gap: 5px;
-  }
-  .days-container::-webkit-scrollbar {
-    width: 0;
-    background-color: transparent;
+    gap: 10px;
   }
   .day {
-    padding: 80px;
     border-radius: 20px;
-    width: auto;
+    min-height: 250px;
+    min-width: 180px;
+    margin: 10px;
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     box-shadow: 9px 10px 78.5px rgba(0, 0, 0, 0.036),
       17.3px 19.3px 102px rgba(0, 0, 0, 0.054),
       44px 49px 184px rgba(0, 0, 0, 0.09);
+  }
+  .days-container::-webkit-scrollbar {
+    height: 4px;
+  }
+  .days-container::-webkit-scrollbar-track {
+    background: #c4c4c4;
+  }
+
+  .days-container::-webkit-scrollbar-thumb {
+    background-color: #49444b;
+    border-radius: 5px;
+    border: 3px none #ffffff;
   }
   .day-img {
     position: absolute;
     top: 0;
     width: 50px;
     height: 50px;
+    left: 50%;
+    transform: translateX(-50%);
   }
   .weekday {
     position: absolute;
     bottom: 0;
     font-size: 20px;
     color: white;
+    width: 100%;
+
+    text-align: center;
   }
   .day-code {
     color: white;
-
     word-wrap: none;
     width: 100%;
     position: absolute;
@@ -175,5 +172,17 @@
   }
   .temp-container {
     color: white;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 60px;
+  }
+  @media (max-width: 600px) {
+    .container {
+      flex-direction: column;
+    }
+    .chart-container {
+      width: 100%;
+    }
   }
 </style>

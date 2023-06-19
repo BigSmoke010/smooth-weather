@@ -54,9 +54,9 @@
       }
     } else {
       geoResponse = await fetch(
-        `https://api.opencagedata.com/geocode/v1/json?q=${locationname}&key=${
-          import.meta.env.VITE_OPENCAGE_API
-        }`
+        `https://api.opencagedata.com/geocode/v1/json?q=${
+          locationname.input
+        }&key=${import.meta.env.VITE_OPENCAGE_API}`
       );
       geoData = await geoResponse.json();
       if (geoData.results.length > 0) {

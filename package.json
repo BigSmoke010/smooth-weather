@@ -16,7 +16,6 @@
 	"type": "module",
 	"dependencies": {
 		"chart.js": "^4.3.0",
-		"google-charts": "^2.0.0",
 		"svelte-inview": "^4.0.0",
 		"svelte-loading-animation": "^0.0.1"
 	}

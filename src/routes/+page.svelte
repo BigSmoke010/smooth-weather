@@ -1,5 +1,5 @@
 <script>
-  import Main from "./main.svelte";
+  import Main from "$lib/main.svelte";
 </script>
 
 <title>Smooth Weather</title>

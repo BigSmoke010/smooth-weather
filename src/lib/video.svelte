@@ -15,6 +15,8 @@
   export let weatherIcon;
   export let colors;
   export let finalAr = [];
+  finalAr = [];
+
   let source, color1, color2;
   const weekdays = [
     "Sunday",
@@ -26,7 +28,6 @@
     "Saturday",
   ];
   let DaysForecastTime = weatherData.daily.time;
-
   function getCurrentWeather(weatherCode) {
     let dayIcon;
     let nightIcon;
@@ -38,11 +39,11 @@
         dayIcon = "01d.png";
         nightIcon = "01n.png";
         if (weatherData.current_weather.is_day) {
-          color1 = "#63FFF7FF";
-          color2 = "#F3FF6EFF";
+          color1 = "#87CEEB";
+          color2 = "#e07b2e";
         } else {
-          color1 = "#0A1B66FF";
-          color2 = "#04090FFF";
+          color2 = "#0E2954";
+          color1 = "#18122B";
         }
         videoSrc = clear;
         description = "Clear sky";
@@ -52,8 +53,8 @@
       case 3:
         dayIcon = "02d.png";
         nightIcon = "02n.png";
-        color1 = "#282A2BFF";
-        color2 = "#7F8487FF";
+        color1 = "#7F8487";
+        color2 = "#B3AAAA";
         videoSrc = cloudy;
         description = "Partly cloudy";
         break;
@@ -61,8 +62,8 @@
       case 48:
         dayIcon = "50d.png";
         nightIcon = "50n.png";
-        color1 = "#C2C9CFFF";
-        color2 = "#F8F0FFFF";
+        color1 = "#C2C9CF";
+        color2 = "#F8F0FF";
         videoSrc = fog;
         description = "Fog";
         break;
@@ -71,8 +72,8 @@
       case 55:
         dayIcon = "09d.png";
         nightIcon = "09n.png";
-        color1 = "#252426FF";
-        color2 = "#757178FF";
+        color1 = "#252426";
+        color2 = "#757178";
         videoSrc = drizzle;
         description = "Drizzle";
         break;
@@ -82,8 +83,8 @@
       case 77:
         dayIcon = "10d.png";
         nightIcon = "10n.png";
-        color1 = "#86BDB4FF";
-        color2 = "#26BDA4FF";
+        color1 = "#86BDB4";
+        color2 = "#26BDA4";
         videoSrc = rain;
         description = "Rain";
         break;
@@ -97,16 +98,16 @@
       case 86:
         dayIcon = "13d.png";
         nightIcon = "13n.png";
-        color1 = "#F0FBFFFF";
-        color2 = "#D1F9FFFF";
+        color1 = "#dadfec";
+        color2 = "#b2b6c2";
         videoSrc = snowy;
         description = "Snow/Rain showers";
         break;
       case 95:
         dayIcon = "11d.png";
         nightIcon = "11n.png";
-        color1 = "#1E00FFFF";
-        color2 = "#03001AFF";
+        color1 = "#001C54";
+        color2 = "#033254";
         videoSrc = lightStorm;
         description = "Thunderstorm (slight)";
         break;
@@ -114,16 +115,16 @@
       case 99:
         dayIcon = "11d.png";
         nightIcon = "11n.png";
-        color1 = "#1E00FFFF";
-        color2 = "#03001AFF";
+        color1 = "#001C54";
+        color2 = "#033254";
         videoSrc = thunder;
         description = "Thunderstorm (heavy)";
         break;
       default:
         dayIcon = "night.png";
         nightIcon = "night.png";
-        color1 = "#1E00FFFF";
-        color2 = "#03001AFF";
+        color1 = "#1E00FF";
+        color2 = "#03001A";
         videoSrc = night;
         description = "Unknown weather";
         break;

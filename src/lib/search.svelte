@@ -66,13 +66,9 @@
   }
 
   function selectSuggestion() {
-    const suggestions = deepValueSearch(AllCountriesData, inputvalue).slice(
-      0,
-      10
-    );
-
+    const suggestions = deepValueSearch(AllCountriesData, inputvalue);
     if (suggestions.length > 0) {
-      dispatch("fetch", { message: inputvalue });
+      dispatch("fetch", { message: suggestions[suggestionIndex] });
     }
   }
 </script>
@@ -114,8 +110,7 @@
             <!-- svelte-ignore a11y-mouse-events-have-key-events -->
             <div
               on:click={() => {
-                inputvalue = match.input;
-                dispatch("fetch", { message: inputvalue });
+                selectSuggestion();
               }}
               class:suggestion={i === suggestionIndex}
               class:selected={i === suggestionIndex}

@@ -138,7 +138,8 @@
   .container {
     display: flex;
     position: relative;
-    width: 100%;
+    width: 100vw;
+    overflow: overlay;
     height: 100vh;
   }
   .loading-wrapper {

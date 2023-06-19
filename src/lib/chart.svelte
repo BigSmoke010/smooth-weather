@@ -60,7 +60,7 @@
           },
           x: {
             grid: {
-              color: "white",
+              color: "transparent",
             },
           },
         },

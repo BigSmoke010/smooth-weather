@@ -10,28 +10,31 @@
   let dispatch = createEventDispatcher();
   let suggestionIndex = 0;
 
-  function deepValueSearch(obj, value) {
-    let AllMatches = [];
-    let re = new RegExp(value, "gi");
-    if (value !== "") {
-      for (let key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          if (key === "name") {
-            let match = re.exec(obj[key]);
-            if (
-              match !== null &&
-              match !== "" &&
-              !match["input"].includes("[object Object]")
-            ) {
-              AllMatches.push({ value: match[0], input: match["input"] });
-            }
-          } else if (typeof obj[key] === "object") {
-            AllMatches = AllMatches.concat(deepValueSearch(obj[key], value));
+  function deepValueSearch(obj, value, re = new RegExp(value, "gi")) {
+    if (obj === undefined || obj === null) {
+      return [];
+    }
+
+    if (value === "") {
+      return [];
+    }
+
+    let allMatches = [];
+
+    for (let [key, val] of Object.entries(obj)) {
+      if (key === "name") {
+        if (typeof val === "string") {
+          let match = re.exec(val);
+          if (match && !match.input.includes("[object Object]")) {
+            allMatches.push({ value: match[0], input: match.input });
           }
         }
+      } else if (Array.isArray(val) || typeof val === "object") {
+        allMatches = allMatches.concat(deepValueSearch(val, value, re));
       }
     }
-    return AllMatches;
+
+    return allMatches;
   }
 
   function handleKeyDown(event) {

@@ -71,6 +71,7 @@
     flex-direction: column;
     transition: all 3s;
     min-height: 300px;
+    width: 100vw;
     background-color: rgba(31, 23, 23, 0.644);
     display: flex;
     flex-direction: row;
@@ -142,7 +143,6 @@
   .days-container::-webkit-scrollbar-thumb {
     background-color: #49444b;
     border-radius: 5px;
-    border: 3px none #ffffff;
   }
   .day-img {
     position: absolute;
@@ -182,7 +182,10 @@
       flex-direction: column;
     }
     .chart-container {
-      width: 100%;
+      width: 95%;
+    }
+    .days-container {
+      width: 95%;
     }
   }
 </style>

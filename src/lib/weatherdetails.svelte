@@ -40,7 +40,7 @@
       style="background-color: {colors.two}10;"
       in:fly={{ duration: 550, y: 100 }}
     >
-      <Chart {weatherData} />
+      <Chart {weatherData} {colors} />
     </div>
 
     <div class="days-container" in:fly={{ duration: 550, y: 100 }}>

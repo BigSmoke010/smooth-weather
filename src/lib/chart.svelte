@@ -2,6 +2,7 @@
   import chartjs from "chart.js/auto";
   import { onMount } from "svelte";
   export let weatherData;
+  export let colors;
   let chartData;
   let chartValues = weatherData.hourly.temperature_2m.slice(0, 13);
   let chartLabels = weatherData.hourly.time
@@ -29,9 +30,10 @@
             pointHoverBackgroundColor: gradientStroke,
             pointHoverBorderColor: gradientStroke,
             pointBorderWidth: 0,
-            pointHoverRadius: 10,
-            pointHoverBorderWidth: 1,
-            pointRadius: 1,
+            pointHoverRadius: 0,
+            pointHoverBorderWidth: 0,
+            borderColor: colors.one,
+            pointRadius: 0,
             fill: false,
             borderWidth: 3,
             borderCapStyle: "round",

@@ -29,8 +29,8 @@
     for (let val of arr) {
       if (typeof val === "string") {
         let match = re.exec(val);
-        if (match && !match.input.includes("[object Object]")) {
-          allMatches.push({ value: match[0], input: match.input });
+        if (match && !match.includes("[object Object]")) {
+          allMatches.push(match.input);
         }
       }
     }
@@ -124,7 +124,17 @@
                 suggestionIndex = i;
               }}
             >
-              {match.input}
+              {#if match.toLowerCase().includes(inputvalue.toLowerCase())}
+                {#each match.split(new RegExp(`(${inputvalue})`, "gi")) as segment}
+                  {#if segment.toLowerCase() === inputvalue.toLowerCase()}
+                    <strong>{segment}</strong>
+                  {:else}
+                    {segment}
+                  {/if}
+                {/each}
+              {:else}
+                {match}
+              {/if}
             </div>
           {/each}
         </div>

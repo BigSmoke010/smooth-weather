@@ -5,11 +5,16 @@
 
   let inputvalue = "";
   export let AllCountriesData;
+  export let blacktheme = false;
   let extendedsearch = undefined;
   let istyping = false;
   let dispatch = createEventDispatcher();
   let suggestionIndex = 0;
-
+  let searchStyle, suggestionStyle;
+  if (blacktheme) {
+    searchStyle = "background-color: rgba(0, 0, 0, 0.342)";
+    suggestionStyle = "background-color: rgba(11, 11, 11, 0.507)";
+  }
   function deepValueSearch(arr, value, re = new RegExp(value, "gi")) {
     if (!Array.isArray(arr)) {
       return [];
@@ -87,6 +92,7 @@
     class:hidesearch={extendedsearch === false}
     class="search"
     class:typing={istyping === true}
+    style={searchStyle}
     tabindex="0"
     on:keydown={handleKeyDown}
   >
@@ -113,6 +119,7 @@
               }}
               class:suggestion={i === suggestionIndex}
               class:selected={i === suggestionIndex}
+              style={suggestionStyle}
               on:mouseover={() => {
                 suggestionIndex = i;
               }}
@@ -155,11 +162,10 @@
     text-align: center;
     width: 28px;
     height: 28px;
-    background-color: rgba(255, 255, 255, 0.342);
     border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.342);
     margin: 10px;
   }
-
   .search-input {
     width: 160px;
     background-color: transparent;
@@ -173,13 +179,12 @@
     width: 100%;
     max-height: 200px;
     overflow-y: auto;
-    background-color: rgba(211, 211, 211, 0.507);
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
     height: auto;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    background-color: rgba(211, 211, 211, 0.507);
   }
   .suggestions::-webkit-scrollbar {
     width: 0;

@@ -70,7 +70,7 @@
     background-size: 400% 400%;
     flex-direction: column;
     transition: all 3s;
-    min-height: 300px;
+    min-height: 400px;
     width: 100vw;
     background-color: rgba(31, 23, 23, 0.644);
     display: flex;

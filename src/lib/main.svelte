@@ -12,27 +12,43 @@
     weatherIcon,
     geoData,
     finalAr = [],
-    colors = {};
-  let state = "";
-  let country = "";
-
+    colors = {},
+    state = "",
+    country = "",
+    intervalId,
+    countrySelect = false,
+    showSearch = false;
   onMount(async () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
         fetchLocation(position.coords.longitude, position.coords.latitude);
       });
-      navigator.permissions.query({ name: "geolocation" }).then(async (x) => {
-        if (x.state === "denied") {
+    }
+    const AllCountries = await fetch(
+      "https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/countries%2Bstates.json"
+    );
+    AllCountriesData = await AllCountries.json();
+    AllCountriesData = getAllNameValues(AllCountriesData);
+    checkperm();
+    intervalId = setInterval(checkperm, 1000);
+  });
+
+  async function checkperm() {
+    navigator.permissions.query({ name: "geolocation" }).then(async (x) => {
+      if (x.state === "denied") {
+        try {
           const location = await fetch(
             `https://api.ipdata.co/?api-key=${import.meta.env.VITE_IPDATA_API}`
           );
           const locationdata = await location.json();
           fetchLocation(locationdata.longitude, locationdata.latitude);
+        } catch (error) {
+          countrySelect = true;
         }
-      });
-    }
-  });
-
+      }
+      clearInterval(intervalId);
+    });
+  }
   async function fetchLocation(lon, lat, locationname = "") {
     let response, geoResponse, data, result;
     if (lon && lat) {
@@ -69,15 +85,9 @@
         data = await response.json();
       }
     }
-    const AllCountries = await fetch(
-      "https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/countries%2Bstates.json"
-    );
-    AllCountriesData = await AllCountries.json();
-    AllCountriesData = getAllNameValues(AllCountriesData);
+
     if (response.ok) {
       weatherData = data;
-    } else {
-      console.error("Request failed with status:", response.status);
     }
   }
   function getAllNameValues(obj) {
@@ -117,6 +127,7 @@
         on:fetch={(e) => {
           fetchLocation(0, 0, e.detail.message);
         }}
+        blacktheme={false}
       />
       <div style="width: 211.63px;">
         <div class="country-city">
@@ -144,6 +155,26 @@
   {:else}
     <div class="loading-wrapper">
       <LoadRing color="#0000009E" size="120px" />
+      {#if countrySelect}
+        <p class="choosefallback">
+          It looks like we cannot get your location. Try <span
+            on:click={() => {
+              showSearch = true;
+            }}
+            class="selectcountry-fallback"
+          >
+            Selecting a country
+          </span>
+        </p>
+        {#if showSearch}
+          <Search
+            {AllCountriesData}
+            on:fetch={(e) => {
+              fetchLocation(0, 0, e.detail.message);
+            }}
+            blacktheme={true}
+          />{/if}
+      {/if}
     </div>
   {/if}
 </div>
@@ -159,12 +190,24 @@
     width: 100vw;
     overflow: overlay;
     height: 100vh;
+    background-color: transparent;
   }
   .loading-wrapper {
     position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+  }
+  .selectcountry-fallback {
+    text-decoration: underline;
+  }
+  .selectcountry-fallback:hover {
+    color: #00000060;
+    cursor: pointer;
   }
   .country-city {
     position: absolute;

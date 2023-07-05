@@ -1,5 +1,6 @@
 <script>
   import Chart from "./chart.svelte";
+  import SunsetSunrise from "./sunset-sunrise.svelte";
   import { onMount } from "svelte";
   import { fly } from "svelte/transition";
   export let weatherData;
@@ -24,59 +25,76 @@
   }
 </script>
 
-<div
-  class="container"
-  style="background-image: linear-gradient(-45deg, {colors.one}, {colors.two});"
->
+<div>
   <div
-    class="container-shadow"
-    style={`
+    class="container"
+    style="background-image: linear-gradient(-45deg, {colors.one}, {colors.two});"
+  >
+    <div
+      class="container-shadow"
+      style={`
   box-shadow: ${hideBoxShadow ? "none" : "0px 4px 40px 40px rgb(31, 29, 29)"};
   `}
-  />
-  {#if hideBoxShadow}
-    <div
-      class="chart-container"
-      style="background-color: {colors.two}10;"
-      in:fly={{ duration: 550, y: 100 }}
-    >
-      <Chart {weatherData} {colors} />
-    </div>
-
-    <div class="days-container" in:fly={{ duration: 550, y: 100 }}>
-      {#each finalAr as dayitem}
-        <div class="day" style="background-color: {colors.one}25;">
-          <img src={dayitem.icon} alt="day img" class="day-img" />
-          <div class="temp-container">
-            {dayitem.minTemp}C°/{dayitem.maxTemp}C°
-          </div>
-          <div class="day-code">{dayitem.description}</div>
-          <div class="weekday">{dayitem.day}</div>
+    />
+    {#if hideBoxShadow}
+      <div class="container1">
+        <div
+          class="chart-container"
+          style="background-color: {colors.two}10;"
+          in:fly={{ duration: 550, y: 100 }}
+        >
+          <Chart {weatherData} {colors} />
         </div>
-      {/each}
+
+        <div class="days-container" in:fly={{ duration: 550, y: 100 }}>
+          {#each finalAr as dayitem}
+            <div class="day" style="background-color: {colors.one}25;">
+              <img src={dayitem.icon} alt="day img" class="day-img" />
+              <div class="temp-container">
+                {dayitem.minTemp}C°/{dayitem.maxTemp}C°
+              </div>
+              <div class="day-code">{dayitem.description}</div>
+              <div class="weekday">{dayitem.day}</div>
+            </div>
+          {/each}
+        </div>
+      </div>
+    {/if}
+    <div
+      style="background-color: {colors.two}25;"
+      class="sunset-sunrise-container"
+    >
+      <SunsetSunrise {weatherData} />
     </div>
-  {/if}
+  </div>
 </div>
 
 <style>
-  @property --p {
-    syntax: "<percentage>";
-    inherits: false;
-    initial-value: 10%;
-  }
   .container {
     position: relative;
     display: flex;
     background-size: 400% 400%;
     flex-direction: column;
-    transition: all 3s;
     min-height: 400px;
     width: 100vw;
     background-color: rgba(31, 23, 23, 0.644);
     display: flex;
-    flex-direction: row;
     gap: 5px;
     animation: gradient 15s ease infinite;
+  }
+  .container1 {
+    display: flex;
+    width: 100vw;
+  }
+  .sunset-sunrise-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 150px;
+    width: 250px;
+    border: 2px rgba(172, 172, 172, 0.301) solid;
+    margin: 10px;
+    border-radius: 30px;
   }
   .chart-container {
     transition: transform 0.5s, margin-left 0.4s;
@@ -158,7 +176,6 @@
     font-size: 20px;
     color: white;
     width: 100%;
-
     text-align: center;
   }
   .day-code {
@@ -178,7 +195,7 @@
     top: 60px;
   }
   @media (max-width: 600px) {
-    .container {
+    .container1 {
       flex-direction: column;
     }
     .chart-container {

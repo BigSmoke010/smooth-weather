@@ -70,9 +70,9 @@
       }
     } else {
       geoResponse = await fetch(
-        `https://api.opencagedata.com/geocode/v1/json?q=${
-          locationname.input
-        }&key=${import.meta.env.VITE_OPENCAGE_API}`
+        `https://api.opencagedata.com/geocode/v1/json?q=${locationname}&key=${
+          import.meta.env.VITE_OPENCAGE_API
+        }`
       );
       geoData = await geoResponse.json();
       if (geoData.results.length > 0) {
@@ -85,7 +85,6 @@
         data = await response.json();
       }
     }
-
     if (response.ok) {
       weatherData = data;
     }
@@ -137,7 +136,7 @@
         </div>
       </div>
 
-      {#key weatherData.current_weather.weathercode}
+      {#key weatherData}
         <Video
           {weatherData}
           bind:weatherDesc

@@ -59,13 +59,14 @@
           {/each}
         </div>
       </div>
+      <div
+        style="background-color: {colors.two}25;"
+        class="sunset-sunrise-container"
+        in:fly={{ duration: 550, y: 100 }}
+      >
+        <SunsetSunrise {weatherData} />
+      </div>
     {/if}
-    <div
-      style="background-color: {colors.two}25;"
-      class="sunset-sunrise-container"
-    >
-      <SunsetSunrise {weatherData} />
-    </div>
   </div>
 </div>
 

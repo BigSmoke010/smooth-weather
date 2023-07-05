@@ -6,11 +6,7 @@
   let curTime = weatherData.current_weather.time;
   let sunrise = weatherData.daily.sunrise[0];
   let sunset = weatherData.daily.sunset[0];
-  console.log(curTime);
-  console.log(sunrise);
-  console.log(sunset);
   let left = calculateLeft(curTime, sunrise, sunset);
-  console.log(left);
   function calculateLeft(time, sunriseTime, sunsetTime) {
     const sunriseDate = new Date(sunriseTime);
     const sunsetDate = new Date(sunsetTime);

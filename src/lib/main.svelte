@@ -182,12 +182,13 @@
   .wrapper {
     display: flex;
     flex-direction: column;
+    width: 100vw;
   }
   .container {
     display: flex;
     position: relative;
     width: 100vw;
-    overflow: overlay;
+    overflow: hidden;
     height: 100vh;
     background-color: transparent;
   }

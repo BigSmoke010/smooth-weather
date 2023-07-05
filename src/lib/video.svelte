@@ -122,7 +122,6 @@
         description = "Thunderstorm (heavy)";
         break;
       default:
-        console.log("default");
         dayIcon = "night.png";
         nightIcon = "night.png";
         color1 = "#1E00FF";
@@ -148,7 +147,6 @@
   for (let i = 0; i < DaysForecastTime.length; i++) {
     let curIt = DaysForecastTime[i];
     let DateEl = new Date(curIt);
-    console.log(weatherData.daily.weathercode[i]);
     finalAr.push({
       icon:
         "http://openweathermap.org/img/wn/" +
@@ -177,6 +175,7 @@
 
 <style>
   #video-player {
+    overflow: hidden;
     position: absolute;
     top: 0;
     left: 0;

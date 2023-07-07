@@ -4,12 +4,20 @@
   export let weatherData;
   export let colors;
   let chartData;
-  let chartValues = weatherData.hourly.temperature_2m.slice(0, 13);
-  let chartLabels = weatherData.hourly.time
-    .slice(0, 13)
-    .map((datetimeString) => {
-      return datetimeString.substring(datetimeString.indexOf("T") + 1);
-    });
+  let chartValues = weatherData.hourly.temperature_2m;
+  let chartLabels = weatherData.hourly.time;
+  const currentTime = weatherData.current_weather.time;
+  const hourlyTime = weatherData.hourly.time;
+  const currentIndex = hourlyTime.indexOf(currentTime);
+  const timeRange = hourlyTime.slice(currentIndex, currentIndex + 12 + 1);
+  chartLabels = timeRange.map((datetimeString) => {
+    return datetimeString.substring(datetimeString.indexOf("T") + 1);
+  });
+  const temperatureRange = chartValues.slice(
+    currentIndex,
+    currentIndex + 12 + 1
+  );
+  chartValues = temperatureRange;
   let ctx;
   let chartCanvas;
   onMount(async (promise) => {

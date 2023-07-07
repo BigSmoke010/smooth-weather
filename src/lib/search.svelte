@@ -10,7 +10,9 @@
   let istyping = false;
   let dispatch = createEventDispatcher();
   let suggestionIndex = 0;
+  let matchesArray = [];
   let searchStyle, suggestionStyle;
+  let typingTimeout;
   if (blacktheme) {
     searchStyle = "background-color: rgba(0, 0, 0, 0.342)";
     suggestionStyle = "background-color: rgba(11, 11, 11, 0.507)";
@@ -101,8 +103,11 @@
         bind:value={inputvalue}
         type="text"
         on:input={() => {
-          deepValueSearch(AllCountriesData, inputvalue);
           istyping = true;
+          clearTimeout(typingTimeout); // Clear any previous timeout
+          typingTimeout = setTimeout(() => {
+            matchesArray = deepValueSearch(AllCountriesData, inputvalue);
+          }, 500);
         }}
         class="search-input"
         in:fade={{ delay: 800 }}
@@ -111,7 +116,7 @@
       />
       {#if inputvalue.length > 0}
         <div transition:slide class="suggestions">
-          {#each deepValueSearch(AllCountriesData, inputvalue) as match, i}
+          {#each matchesArray as match, i}
             <!-- svelte-ignore a11y-mouse-events-have-key-events -->
             <div
               on:click={() => {

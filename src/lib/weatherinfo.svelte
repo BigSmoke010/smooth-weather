@@ -3,14 +3,13 @@
   import Winddir from "./svgs/wind-direction.svg";
   import Circle from "./svgs/circle.svg";
   export let weatherData;
-  let chosenIcon, iconurl;
+  let chosenIcon;
   if (weatherData.icon) {
     if (weatherData.weatherD.current_weather.is_day) {
       chosenIcon = weatherData.icon.day;
     } else {
       chosenIcon = weatherData.icon.night;
     }
-    iconurl = "http://openweathermap.org/img/wn/" + chosenIcon;
   }
   function convertWindDirection(windDirection) {
     const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
@@ -27,7 +26,7 @@
     </div>
     <div class="weather-desc">{weatherData.descript}</div>
     <div class="wind-wrapper">
-      <img src={iconurl} alt="weather Icon" />
+      <img src={chosenIcon} alt="weather Icon" class="weather-icon" />
       <img src={Circle} alt="sep" class="seperator" />
       <div class="dir-wrapper">
         <img
@@ -71,6 +70,9 @@
     display: flex;
     margin: 5px;
     gap: 3px;
+  }
+  .weather-icon {
+    width: 38px;
   }
   .dir-wrapper {
     display: flex;

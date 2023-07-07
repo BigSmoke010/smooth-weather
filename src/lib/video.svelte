@@ -37,8 +37,8 @@
 
     switch (weatherCode) {
       case 0:
-        dayIcon = "01d.png";
-        nightIcon = "01n.png";
+        dayIcon = "/src/lib/svgs/weather_icons/sun.svg";
+        nightIcon = "/src/lib/svgs/weather_icons/moon.svg";
         if (weatherData.current_weather.is_day) {
           color1 = "#87CEEB";
           color2 = "#e07b2e";
@@ -52,8 +52,8 @@
       case 1:
       case 2:
       case 3:
-        dayIcon = "02d.png";
-        nightIcon = "02n.png";
+        dayIcon = "/src/lib/svgs/weather_icons/cloudy.svg";
+        nightIcon = "/src/lib/svgs/weather_icons/cloudy_night.svg";
         color1 = "#7F8487";
         color2 = "#B3AAAA";
         videoSrc = cloudy;
@@ -61,8 +61,8 @@
         break;
       case 45:
       case 48:
-        dayIcon = "50d.png";
-        nightIcon = "50n.png";
+        dayIcon = "/src/lib/svgs/weather_icons/fog.svg";
+        nightIcon = "/src/lib/svgs/weather_icons/fog.svg";
         color1 = "#C2C9CF";
         color2 = "#F8F0FF";
         videoSrc = fog;
@@ -71,8 +71,8 @@
       case 51:
       case 53:
       case 55:
-        dayIcon = "09d.png";
-        nightIcon = "09n.png";
+        dayIcon = "/src/lib/svgs/weather_icons/drizzle.svg";
+        nightIcon = "/src/lib/svgs/weather_icons/drizzle.svg";
         color1 = "#252426";
         color2 = "#757178";
         videoSrc = drizzle;
@@ -82,8 +82,8 @@
       case 63:
       case 65:
       case 77:
-        dayIcon = "10d.png";
-        nightIcon = "10n.png";
+        dayIcon = "/src/lib/svgs/weather_icons/rain.svg";
+        nightIcon = "/src/lib/svgs/weather_icons/rain.svg";
         color1 = "#86BDB4";
         color2 = "#26BDA4";
         videoSrc = rain;
@@ -97,16 +97,16 @@
       case 82:
       case 85:
       case 86:
-        dayIcon = "13d.png";
-        nightIcon = "13n.png";
+        dayIcon = "/src/lib/svgs/weather_icons/snow.svg";
+        nightIcon = "/src/lib/svgs/weather_icons/snow.svg";
         color1 = "#dadfec";
         color2 = "#b2b6c2";
         videoSrc = snowy;
         description = "Snow/Rain showers";
         break;
       case 95:
-        dayIcon = "11d.png";
-        nightIcon = "11n.png";
+        dayIcon = "/src/lib/svgs/weather_icons/slight_thunder.svg";
+        nightIcon = "/src/lib/svgs/weather_icons/slight_thunder.svg";
         color1 = "#001C54";
         color2 = "#033254";
         videoSrc = lightStorm;
@@ -114,8 +114,8 @@
         break;
       case 96:
       case 99:
-        dayIcon = "11d.png";
-        nightIcon = "11n.png";
+        dayIcon = "/src/lib/svgs/weather_icons/heavy_thunder.svg";
+        nightIcon = "/src/lib/svgs/weather_icons/heavy_thunder.svg";
         color1 = "#001C54";
         color2 = "#033254";
         videoSrc = thunder;
@@ -148,9 +148,7 @@
     let curIt = DaysForecastTime[i];
     let DateEl = new Date(curIt);
     finalAr.push({
-      icon:
-        "http://openweathermap.org/img/wn/" +
-        getCurrentWeather(weatherData.daily.weathercode[i]).dayIcon,
+      icon: getCurrentWeather(weatherData.daily.weathercode[i]).dayIcon,
       description: getCurrentWeather(weatherData.daily.weathercode[i])
         .description,
       minTemp: weatherData.daily.temperature_2m_min[i],

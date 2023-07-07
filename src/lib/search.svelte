@@ -29,7 +29,7 @@
     for (let val of arr) {
       if (typeof val === "string") {
         let match = re.exec(val);
-        if (match && !match.includes("[object Object]")) {
+        if (match) {
           allMatches.push(match.input);
         }
       }

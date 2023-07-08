@@ -149,6 +149,9 @@
     min-height: 250px;
     min-width: 180px;
     margin: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
     position: relative;
     box-shadow: 9px 10px 78.5px rgba(0, 0, 0, 0.036),
       17.3px 19.3px 102px rgba(0, 0, 0, 0.054),
@@ -193,6 +196,7 @@
     color: white;
     width: 100%;
     text-align: center;
+    font-size: 15px;
   }
   @media (max-width: 600px) {
     .container1 {

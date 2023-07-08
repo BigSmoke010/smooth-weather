@@ -1,6 +1,6 @@
 <script>
   import { clickOutside } from "./clickoutside";
-  import { fade, slide } from "svelte/transition";
+  import { fade, fly, slide } from "svelte/transition";
   import { createEventDispatcher } from "svelte";
 
   let inputvalue = "";
@@ -12,6 +12,7 @@
   let suggestionIndex = 0;
   let matchesArray = [];
   let searchStyle, suggestionStyle;
+  let showLoad = false;
   let typingTimeout;
   if (blacktheme) {
     searchStyle = "background-color: rgba(0, 0, 0, 0.342)";
@@ -36,7 +37,7 @@
         }
       }
     }
-
+    showLoad = false;
     return allMatches;
   }
 
@@ -86,8 +87,10 @@
       extendedsearch = true;
     }}
     use:clickOutside={() => {
+      clearTimeout(typingTimeout);
       extendedsearch = false;
       istyping = false;
+      showLoad = false;
       inputvalue = "";
     }}
     class:showsearch={extendedsearch === true}
@@ -104,7 +107,8 @@
         type="text"
         on:input={() => {
           istyping = true;
-          clearTimeout(typingTimeout); // Clear any previous timeout
+          showLoad = true;
+          clearTimeout(typingTimeout);
           typingTimeout = setTimeout(() => {
             matchesArray = deepValueSearch(AllCountriesData, inputvalue);
           }, 500);
@@ -114,7 +118,17 @@
         out:fade
         placeholder="Search a city, country..."
       />
-      {#if inputvalue.length > 0}
+      {#if showLoad && istyping && inputvalue.length > 0}
+        <div class="load-results" in:fly={{ y: -50 }}>
+          <div class="lds-ring">
+            <div />
+            <div />
+            <div />
+            <div />
+          </div>
+        </div>
+      {/if}
+      {#if showLoad === false && inputvalue.length > 0}
         <div transition:slide class="suggestions">
           {#each matchesArray as match, i}
             <!-- svelte-ignore a11y-mouse-events-have-key-events -->
@@ -122,7 +136,7 @@
               on:click={() => {
                 selectSuggestion();
               }}
-              class:suggestion={i === suggestionIndex}
+              class="suggestion"
               class:selected={i === suggestionIndex}
               style={suggestionStyle}
               on:mouseover={() => {
@@ -169,7 +183,40 @@
   ::placeholder {
     color: #fffbf76d;
   }
-
+  .lds-ring {
+    display: inline-block;
+    position: relative;
+    width: 28px;
+    height: 28px;
+  }
+  .lds-ring div {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: #fff transparent transparent transparent;
+  }
+  .lds-ring div:nth-child(1) {
+    animation-delay: -0.45s;
+  }
+  .lds-ring div:nth-child(2) {
+    animation-delay: -0.3s;
+  }
+  .lds-ring div:nth-child(3) {
+    animation-delay: -0.15s;
+  }
+  @keyframes lds-ring {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
   .search {
     position: relative;
     display: flex;
@@ -180,6 +227,20 @@
     border-radius: 50%;
     background-color: rgba(255, 255, 255, 0.342);
     margin: 10px;
+  }
+  .load-results {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 25px;
+    height: 25px;
+    z-index: 1;
+    background-color: rgba(255, 255, 255, 0.342);
+    border-radius: 50%;
+    left: 50%;
+    top: 50px;
+    transform: translateX(-50%);
   }
   .search-input {
     width: 160px;
@@ -205,7 +266,12 @@
     width: 0;
     background-color: transparent;
   }
-  .suggestion:hover,
+  .suggestion {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 17px;
+  }
+  .selected:hover,
   .selected {
     background-color: white;
   }

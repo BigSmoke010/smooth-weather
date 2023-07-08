@@ -227,6 +227,7 @@
       right: 0;
       bottom: 0;
       top: unset;
+      z-index: 1;
     }
   }
 </style>

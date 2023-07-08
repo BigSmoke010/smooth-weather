@@ -49,7 +49,9 @@
         <div class="days-container" in:fly={{ duration: 550, y: 100 }}>
           {#each finalAr as dayitem}
             <div class="day" style="background-color: {colors.one}25;">
-              <img src={dayitem.icon} alt="day img" class="day-img" />
+              <div class="img-container">
+                <img src={dayitem.icon} alt="day img" class="day-img" />
+              </div>
               <div class="temp-container">
                 {dayitem.minTemp}C°/{dayitem.maxTemp}C°
               </div>
@@ -164,17 +166,18 @@
     border-radius: 5px;
   }
   .day-img {
-    position: absolute;
-    top: 0;
     width: 50px;
-    height: 50px;
-    left: 50%;
-    transform: translateX(-50%);
+    height: 100px;
+  }
+  .img-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .weekday {
     position: absolute;
-    bottom: 0;
-    font-size: 20px;
+    bottom: 10px;
+    font-size: 18px;
     color: white;
     width: 100%;
     text-align: center;
@@ -183,17 +186,13 @@
     color: white;
     word-wrap: none;
     width: 100%;
-    position: absolute;
-    bottom: 50px;
     text-align: center;
-    font-size: 22px;
+    font-size: 20px;
   }
   .temp-container {
     color: white;
-    position: absolute;
     width: 100%;
     text-align: center;
-    top: 60px;
   }
   @media (max-width: 600px) {
     .container1 {

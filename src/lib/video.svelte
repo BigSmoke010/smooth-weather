@@ -1,5 +1,7 @@
 <script>
   import { fade } from "svelte/transition";
+
+  // Weather videos
   import thunder from "./vids/thunder.mp4";
   import cloudy from "./vids/cloudy.mp4";
   import fog from "./vids/fog.mp4";
@@ -9,12 +11,25 @@
   import rain from "./vids/rain.mp4";
   import snowy from "./vids/snow.mp4";
   import clear from "./vids/clear.mp4";
+
+  // Weather icons
+  import cloudy_night from "./svgs/weather_icons/cloudy_night.svg";
+  import cloudyicon from "./svgs/weather_icons/cloudy.svg";
+  import fogicon from "./svgs/weather_icons/fog.svg";
+  import heavy_thunder_icon from "./svgs/weather_icons/heavy_thunder.svg";
+  import slight_thunder_icon from "./svgs/weather_icons/slight_thunder.svg";
+  import rainicon from "./svgs/weather_icons/rain.svg";
+  import sunicon from "./svgs/weather_icons/sun.svg";
+  import snowicon from "./svgs/weather_icons/snow.svg";
+  import drizzleicon from "./svgs/weather_icons/drizzle.svg";
+  import moonicon from "./svgs/weather_icons/moon.svg";
+
+  // vars
   export let code;
   export let weatherDesc;
   export let weatherData;
   export let weatherIcon;
   export let colors;
-
   export let finalAr = [];
   finalAr = [];
 
@@ -29,6 +44,8 @@
     "Saturday",
   ];
   let DaysForecastTime = weatherData.daily.time;
+
+  // get weather and return description, video and icon
   function getCurrentWeather(weatherCode) {
     let dayIcon;
     let nightIcon;
@@ -37,8 +54,8 @@
 
     switch (weatherCode) {
       case 0:
-        dayIcon = "/src/lib/svgs/weather_icons/sun.svg";
-        nightIcon = "/src/lib/svgs/weather_icons/moon.svg";
+        dayIcon = sunicon;
+        nightIcon = moonicon;
         if (weatherData.current_weather.is_day) {
           color1 = "#87CEEB";
           color2 = "#e07b2e";
@@ -52,8 +69,8 @@
       case 1:
       case 2:
       case 3:
-        dayIcon = "/src/lib/svgs/weather_icons/cloudy.svg";
-        nightIcon = "/src/lib/svgs/weather_icons/cloudy_night.svg";
+        dayIcon = cloudyicon;
+        nightIcon = cloudy_night;
         color1 = "#7F8487";
         color2 = "#B3AAAA";
         videoSrc = cloudy;
@@ -61,8 +78,8 @@
         break;
       case 45:
       case 48:
-        dayIcon = "/src/lib/svgs/weather_icons/fog.svg";
-        nightIcon = "/src/lib/svgs/weather_icons/fog.svg";
+        dayIcon = fogicon;
+        nightIcon = fogicon;
         color1 = "#C2C9CF";
         color2 = "#F8F0FF";
         videoSrc = fog;
@@ -71,8 +88,8 @@
       case 51:
       case 53:
       case 55:
-        dayIcon = "/src/lib/svgs/weather_icons/drizzle.svg";
-        nightIcon = "/src/lib/svgs/weather_icons/drizzle.svg";
+        dayIcon = drizzleicon;
+        nightIcon = drizzleicon;
         color1 = "#252426";
         color2 = "#757178";
         videoSrc = drizzle;
@@ -82,8 +99,8 @@
       case 63:
       case 65:
       case 77:
-        dayIcon = "/src/lib/svgs/weather_icons/rain.svg";
-        nightIcon = "/src/lib/svgs/weather_icons/rain.svg";
+        dayIcon = rainicon;
+        nightIcon = rainicon;
         color1 = "#86BDB4";
         color2 = "#26BDA4";
         videoSrc = rain;
@@ -97,16 +114,16 @@
       case 82:
       case 85:
       case 86:
-        dayIcon = "/src/lib/svgs/weather_icons/snow.svg";
-        nightIcon = "/src/lib/svgs/weather_icons/snow.svg";
+        dayIcon = snowicon;
+        nightIcon = snowicon;
         color1 = "#dadfec";
         color2 = "#b2b6c2";
         videoSrc = snowy;
         description = "Snow/Rain showers";
         break;
       case 95:
-        dayIcon = "/src/lib/svgs/weather_icons/slight_thunder.svg";
-        nightIcon = "/src/lib/svgs/weather_icons/slight_thunder.svg";
+        dayIcon = slight_thunder_icon;
+        nightIcon = slight_thunder_icon;
         color1 = "#001C54";
         color2 = "#033254";
         videoSrc = lightStorm;
@@ -114,8 +131,8 @@
         break;
       case 96:
       case 99:
-        dayIcon = "/src/lib/svgs/weather_icons/heavy_thunder.svg";
-        nightIcon = "/src/lib/svgs/weather_icons/heavy_thunder.svg";
+        dayIcon = heavy_thunder_icon;
+        nightIcon = heavy_thunder_icon;
         color1 = "#001C54";
         color2 = "#033254";
         videoSrc = thunder;

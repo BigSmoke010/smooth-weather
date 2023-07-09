@@ -268,11 +268,21 @@
   }
   .suggestion {
     display: block;
-    margin-bottom: 3px;
-    font-size: 17px;
+    margin-bottom: 5px;
+    font-size: 16px;
+  }
+  .selected::after {
+    content: "";
+    width: 50px;
+    height: 100px;
+    left: 0;
+    background-color: red;
+    z-index: 1;
   }
   .selected:hover,
   .selected {
+    position: relative;
+
     background-color: white;
   }
   input:focus {
@@ -338,6 +348,11 @@
       border-top-right-radius: 10px;
       border-bottom-left-radius: 0px;
       border-bottom-right-radius: 0px;
+    }
+  }
+  @media (max-width: 657px) {
+    .search {
+      max-width: 160px;
     }
   }
 </style>

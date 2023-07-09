@@ -47,7 +47,6 @@
   let source, color1, color2, videoimg;
   let is_mobile =
     !!navigator.userAgent.match(/iphone|android|blackberry/gi) || false;
-  console.log(is_mobile);
   const weekdays = [
     "Sunday",
     "Monday",
@@ -73,12 +72,14 @@
         if (weatherData.current_weather.is_day) {
           color1 = "#87CEEB";
           color2 = "#e07b2e";
+          videoSrc = clear;
+          videoimg = clearimg;
         } else {
           color2 = "#0E2954";
           color1 = "#18122B";
+          videoSrc = night;
+          videoimg = nightimg;
         }
-        videoSrc = clear;
-        videoimg = clearimg;
         description = "Clear sky";
         break;
       case 1:
@@ -179,11 +180,7 @@
     night: getCurrentWeather(code).nightIcon,
   };
   colors = { one: color1, two: color2 };
-  if (!weatherData.current_weather.is_day && weatherDesc === "Clear sky") {
-    source = night;
-  } else {
-    source = getCurrentWeather(code).videoSrc;
-  }
+  source = getCurrentWeather(code).videoSrc;
   for (let i = 0; i < DaysForecastTime.length; i++) {
     let curIt = DaysForecastTime[i];
     let DateEl = new Date(curIt);

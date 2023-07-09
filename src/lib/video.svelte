@@ -12,6 +12,17 @@
   import snowy from "./vids/snow.mp4";
   import clear from "./vids/clear.mp4";
 
+  // Weather images
+  import thunderimg from "./vids/thumbs/thunder.png";
+  import cloudyimg from "./vids/thumbs/cloudy.png";
+  import fogimg from "./vids/thumbs/fog.png";
+  import drizzleimg from "./vids/thumbs/drizzle.png";
+  import lightStormimg from "./vids/thumbs/light_thunder.png";
+  import nightimg from "./vids/thumbs/night.png";
+  import rainimg from "./vids/thumbs/rain.png";
+  import snowyimg from "./vids/thumbs/snow.png";
+  import clearimg from "./vids/thumbs/clear.png";
+
   // Weather icons
   import cloudy_night from "./svgs/weather_icons/cloudy_night.svg";
   import cloudyicon from "./svgs/weather_icons/cloudy.svg";
@@ -33,7 +44,10 @@
   export let finalAr = [];
   finalAr = [];
 
-  let source, color1, color2;
+  let source, color1, color2, videoimg;
+  let is_mobile =
+    !!navigator.userAgent.match(/iphone|android|blackberry/gi) || false;
+  console.log(is_mobile);
   const weekdays = [
     "Sunday",
     "Monday",
@@ -64,6 +78,7 @@
           color1 = "#18122B";
         }
         videoSrc = clear;
+        videoimg = clearimg;
         description = "Clear sky";
         break;
       case 1:
@@ -74,6 +89,7 @@
         color1 = "#7F8487";
         color2 = "#B3AAAA";
         videoSrc = cloudy;
+        videoimg = cloudyimg;
         description = "Partly cloudy";
         break;
       case 45:
@@ -83,6 +99,7 @@
         color1 = "#C2C9CF";
         color2 = "#F8F0FF";
         videoSrc = fog;
+        videoimg = fogimg;
         description = "Fog";
         break;
       case 51:
@@ -93,6 +110,7 @@
         color1 = "#252426";
         color2 = "#757178";
         videoSrc = drizzle;
+        videoimg = drizzleimg;
         description = "Drizzle";
         break;
       case 61:
@@ -104,6 +122,7 @@
         color1 = "#86BDB4";
         color2 = "#26BDA4";
         videoSrc = rain;
+        videoimg = rainimg;
         description = "Rain";
         break;
       case 71:
@@ -119,6 +138,7 @@
         color1 = "#dadfec";
         color2 = "#b2b6c2";
         videoSrc = snowy;
+        videoimg = snowyimg;
         description = "Snow/Rain showers";
         break;
       case 95:
@@ -127,6 +147,7 @@
         color1 = "#001C54";
         color2 = "#033254";
         videoSrc = lightStorm;
+        videoimg = lightStormimg;
         description = "Thunderstorm (slight)";
         break;
       case 96:
@@ -136,6 +157,7 @@
         color1 = "#001C54";
         color2 = "#033254";
         videoSrc = thunder;
+        videoimg = thunderimg;
         description = "Thunderstorm (heavy)";
         break;
       default:
@@ -144,11 +166,12 @@
         color1 = "#1E00FF";
         color2 = "#03001A";
         videoSrc = night;
+        videoimg = nightimg;
         description = "Unknown weather";
         break;
     }
 
-    return { description, dayIcon, nightIcon, videoSrc };
+    return { description, dayIcon, nightIcon, videoSrc, videoimg };
   }
   weatherDesc = getCurrentWeather(code).description;
   weatherIcon = {
@@ -175,21 +198,26 @@
   }
 </script>
 
-<video
-  transition:fade={{ duration: 1000 }}
-  id="video-player"
-  autoplay
-  loop
-  muted
-  on:contextmenu={(e) => {
-    e.preventDefault();
-  }}
->
-  <source src={source} type="video/mp4" />
-</video>
+{#if !is_mobile}
+  <video
+    transition:fade={{ duration: 1000 }}
+    id="video-player"
+    autoplay
+    loop
+    muted
+    on:contextmenu={(e) => {
+      e.preventDefault();
+    }}
+  >
+    <source src={source} type="video/mp4" />
+  </video>
+{:else}
+  <img src={getCurrentWeather(code).videoimg} alt="video" id="bg-img" />
+{/if}
 
 <style>
-  #video-player {
+  #video-player,
+  #bg-img {
     overflow: hidden;
     position: absolute;
     top: 0;
